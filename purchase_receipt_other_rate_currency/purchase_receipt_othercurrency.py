@@ -39,7 +39,7 @@ class npp_account_voucher(models.Model):
         tax_pool = self.pool.get('account.tax')
         partner_pool = self.pool.get('res.partner')
         position_pool = self.pool.get('account.fiscal.position')
-        journal_id = context.get('journal_id', False)
+        journal_obj = context.get('journal_id', False)
         if not line_ids:
             line_ids = []
         res = {
@@ -81,8 +81,8 @@ class npp_account_voucher(models.Model):
         currency_id = False
         if self.journal_id and self.journal_id.id:
             currency_id = self.journal_id and self.journal_id.currency.id or self.journal_id.company_id.currency_id.id
-        elif journal_id:
-            journal_id_obj = self.env['account.journal'].browse(journal_id)
+        elif journal_obj:
+            journal_id_obj = self.env['account.journal'].browse(journal_obj)
             currency_id = journal_id_obj.currency.id or journal_id_obj.company_id.currency_id.id
         res.update({
             'amount': total or voucher_total,
