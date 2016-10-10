@@ -79,11 +79,11 @@ class npp_account_voucher(models.Model):
         total = voucher_total + total_tax
         self.write(({'tax_amount': total_tax}))
         currency_id = False
-        if self.journal_id and self.journal_id.id:
-            currency_id = self.journal_id and self.journal_id.currency.id or self.journal_id.company_id.currency_id.id
-        elif journal_obj:
+        if journal_obj:
             journal_id_obj = self.env['account.journal'].browse(journal_obj)
             currency_id = journal_id_obj.currency.id or journal_id_obj.company_id.currency_id.id
+        elif self.journal_id and self.journal_id.id:
+            currency_id = self.journal_id and self.journal_id.currency.id or self.journal_id.company_id.currency_id.id
         res.update({
             'amount': total or voucher_total,
             'tax_amount': total_tax,
