@@ -1,0 +1,38 @@
+<openerp>
+	<data>
+		<record id="hss_view_purchase_receipt_form_inherit" model="ir.ui.view">
+			<field name="name">account.voucher.purchase.form</field>
+			<field name="model">account.voucher</field>
+			<field name="inherit_id" ref="account_voucher.view_purchase_receipt_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='currency_id']" position="replace">
+				</xpath>
+				<xpath expr="//field[@name='journal_id']" position="after">
+					<field name="currency_id" required="True" attrs="{'readonly': [('state','!=','draft')], 'invisible': [('rate_pr','=',1)]}"/>
+					<field name="rate_pr" attrs="{'readonly': [('state','!=','draft')], 'invisible': [('rate_pr','=',1)]}" required="True"/>
+				</xpath>
+				<xpath expr="//field[@name='line_dr_ids']" position="attributes">
+					<attribute name="context">{'journal_id':journal_id,'partner_id':partner_id,'line_dr_ids':line_dr_ids,'rate_pr':rate_pr}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='line_dr_ids']" position="attributes">
+					<attribute name="on_change">onchange_price_pr(line_dr_ids, tax_id, partner_id, context)</attribute>
+				</xpath>
+				<xpath expr="//field[@name='tax_id']" position="attributes">
+					<attribute name="context">{'line_dr_ids':line_dr_ids,'rate_pr':rate_pr}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='tax_id']" position="attributes">
+					<attribute name="on_change">onchange_price_pr(line_dr_ids, tax_id, partner_id, context)</attribute>
+				</xpath>
+				<xpath expr="//field[@name='tax_amount']" position="attributes">
+					<attribute name="readonly">False</attribute>
+				</xpath>
+				<xpath expr="//field[@name='tax_amount']" position="attributes">
+					<attribute name="attrs">{'readonly': [('state','!=','draft')]}</attribute>
+				</xpath>
+				<xpath expr="//field[@name='journal_id']" position="attributes">
+					<attribute name="context">{'pur_rec':'purchase_receipt'}</attribute>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>
