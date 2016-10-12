@@ -29,7 +29,10 @@ class npp_account_voucher(models.Model):
             if voucher.rate_pr == 1.0 or float_compare(voucher.currency_id.rate, voucher.rate_pr, precision_digits=6) == 0:
                 voucher.paid_amount_in_company_currency = self.pool.get('res.currency').compute(self.env.cr, self.env.uid, voucher.currency_id.id, voucher.company_id.currency_id.id, voucher.amount, context=ctx)
             else:
-                voucher.paid_amount_in_company_currency = float_round(voucher.amount/voucher.rate_pr, 2)
+                total = 0.0
+                for line in voucher.line_dr_ids:
+                    total += float_round(line.amount/voucher.rate_pr, 2)
+                voucher.paid_amount_in_company_currency = total
     
     rate_pr = fields.Float(string='Current Rate', digits=(12, 6), default=_get_default_rate_pr)
     paid_amount_in_company_currency = fields.Float(compute=_paid_amount_in_company_currency, string='Paid Amount in Company Currency', readonly=True)
