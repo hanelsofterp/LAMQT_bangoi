@@ -30,9 +30,13 @@ class npp_account_voucher(models.Model):
                 voucher.paid_amount_in_company_currency = self.pool.get('res.currency').compute(self.env.cr, self.env.uid, voucher.currency_id.id, voucher.company_id.currency_id.id, voucher.amount, context=ctx)
             else:
                 total = 0.0
+                tax_total = 0.0
                 for line in voucher.line_dr_ids:
                     total += float_round(line.amount/voucher.rate_pr, 2)
-                voucher.paid_amount_in_company_currency = total
+                    if voucher.tax_id and voucher.tax_id.id:
+                        tax_line = voucher.tax_id.compute_all(line.amount, 1).get('taxes', [])[0]
+                        tax_total += float_round(tax_line.get('amount')/voucher.rate_pr, 2) 
+                voucher.paid_amount_in_company_currency = total + tax_total
     
     rate_pr = fields.Float(string='Current Rate', digits=(12, 6), default=_get_default_rate_pr)
     paid_amount_in_company_currency = fields.Float(compute=_paid_amount_in_company_currency, string='Paid Amount in Company Currency', readonly=True)
